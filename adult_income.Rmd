@@ -1,0 +1,166 @@
+---
+title: Adult Income Dataset
+author: "Rahul Jadhav"
+date: "2024-04-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+
+#loading the dataset
+data <- read.csv('/Users/rahuljadhav/Documents/ESOC 214 /data/adult.csv')
+
+#dimensions of the dataset
+dim(data)
+
+```
+```{r}
+
+#summary of the data
+summary(data)
+
+```
+```{r}
+
+# Get names of columns in the dataset
+column_names <- names(data)
+
+# Print the column names
+print(column_names)
+
+```
+
+```{r}
+
+#loading the dplyr package
+library(dplyr)
+
+#remove rows with missing values
+cleaned_data <- data %>%
+  filter(!is.na(X39) & !is.na(State.gov) & !is.na(X77516) & !is.na(Bachelors) & 
+         !is.na(X13) & !is.na(Never.married) & !is.na(Adm.clerical) & !is.na(Not.in.family) & 
+         !is.na(White) & !is.na(Male) & !is.na(X2174) & !is.na(X0) & !is.na(X40) & 
+         !is.na(United.States) & !is.na(X..50K))
+
+summary(cleaned_data)
+
+```
+```{r}
+#check the dimensions of the cleaned dataset
+dim(cleaned_data)
+```
+
+```{r}
+#check for duplicates
+duplicated_rows <- data[duplicated(data), ]
+#print duplicated rows if any
+summary(duplicated_rows)
+```
+```{r}
+#remove duplicates
+cleaned_data <- unique(data)
+summary(cleaned_data)
+
+```
+
+```{r}
+#dimensions of cleaned dataset
+dim(cleaned_data)
+```
+
+```{r}
+#exporting data from R to a CSV file
+write.csv(cleaned_data,"adult_income.csv")
+```
+```{r}
+getwd()
+```
+
+```{r}
+#bar graph with facet wrap aesthetics to compare distribution of income by education level
+
+library(ggplot2)
+
+#rename column X..50K to income 
+if ("X..50K" %in% colnames(cleaned_data)) {
+  cleaned_data <- dplyr::rename(cleaned_data, income = X..50K)
+}
+
+# Plotting bar plot between income and Bachelors with facet wrap
+ggplot(cleaned_data, aes(x = income)) +
+  geom_bar() +
+  facet_wrap(~ Bachelors) +
+  labs(title = "Income Distribution by Education Level", x = "Income", y = "Count")
+
+
+```
+
+```{r}
+#bar plot for comparison between income and sex (male vs female)
+
+#rename column X..50K to income if necessary
+if ("X..50K" %in% colnames(cleaned_data)) {
+  cleaned_data <- dplyr::rename(cleaned_data, income = X..50K)
+}
+
+#rename 'Male' column to 'Sex'
+if ("Male" %in% colnames(cleaned_data)) {
+  cleaned_data <- dplyr::rename(cleaned_data, Sex = Male)
+}
+
+# Plotting bar plot between income and sex
+ggplot(cleaned_data, aes(x = income, fill = Sex)) +
+  geom_bar(position = "dodge", color = "black") +
+  labs(title = "Income vs. Sex", x = "Income", y = "Count", fill = "Sex") +
+  theme(legend.position = "top")
+
+```
+```{r}
+#bar plot for analysis of income earned with its counts
+
+# Rename column X..50K to income if necessary
+if ("X..50K" %in% colnames(cleaned_data)) {
+  cleaned_data <- dplyr::rename(cleaned_data, income = X..50K)
+}
+
+# Plot count plot for income
+ggplot(cleaned_data, aes(x = income)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Income Count Plot", x = "Income", y = "Count")
+
+
+```
+```{r}
+#bar plot for comparison between occupation distribution and its count
+ggplot(cleaned_data, aes(x = Adm.clerical)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Occupation Distribution", x = "Occupation", y = "Count") +
+  
+  #aligning the x axis correctly 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+```
+```{r}
+#bar plot for comparison between martial status and its count
+ggplot(cleaned_data, aes(x = Never.married)) +
+  geom_bar(fill = "skyblue", color = "black") +
+  labs(title = "Marital Status Distribution", x = "Marital Status", y = "Count") +
+  
+  #aligning the x axis correctly
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+
+```
+```{r}
+#bar graph with facet wrap aesthetics to compare distribution of race and its count
+
+ggplot(cleaned_data, aes(x = White, fill = White)) +
+  geom_bar(width = 1) +
+  labs(title = "Race Distribution", x = "Race", y = "Count") +
+  theme(legend.position = "bottom")
+
+
+```
+
+
+
